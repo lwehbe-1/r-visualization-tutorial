@@ -1,0 +1,126 @@
+---
+title: "Code-Through Tutorial"
+subtitle: "Introduction to Data Visualization in R using ggplot2"
+author: "Lara Wehbe"
+output:
+  ioslides_presentation
+---
+
+# 1. Introduction
+
+## Overview
+
+In this tutorial, we will explore the basics of data visualization in R using the `ggplot2` package. Data visualization is a crucial aspect of data analysis, allowing us to understand patterns, trends, and insights effectively. `ggplot2` is a powerful and flexible package for creating static and interactive plots in R.
+
+## Why Use `ggplot2`?
+
+- Easy-to-use layered grammar of graphics
+- Highly customizable
+- Can handle large datasets efficiently
+- Supports various types of plots
+
+# 2. Setting Up the Environment
+
+## Load the needed libraries
+
+```{r, message=FALSE, warning=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(maps)
+library(ggthemes)
+library(kableExtra) # Added for better table rendering
+```
+
+# 3. Exploring a Dataset
+
+## Overview
+
+We will use the built-in `mtcars` dataset, which contains data on different car models, including miles per gallon (mpg), horsepower (hp), weight (wt), and other characteristics.
+
+```{r}
+# View first few rows of the dataset
+head(mtcars)
+```
+
+## Summary Statistics
+
+```{r, results='asis', echo=FALSE}
+# Summary statistics of the dataset
+knitr::kable(summary(mtcars), format = "html") %>% 
+  kable_styling(full_width = FALSE, position = "center", font_size = 12) %>%
+  scroll_box(height = "400px") # Enables scrolling for better visibility
+```
+
+# 4. Data Visualization
+
+## Scatter Plot: MPG vs Horsepower
+
+A scatter plot is useful for visualizing relationships between two continuous variables. Here, we plot `mpg` against `hp`.
+
+```{r, echo=FALSE}
+ggplot(mtcars, aes(x = hp, y = mpg)) +
+  geom_point(color = "blue") +
+  labs(title = "Scatter Plot of MPG vs Horsepower",
+       x = "Horsepower",
+       y = "Miles Per Gallon")
+```
+
+## Histogram: Distribution of MPG
+
+A histogram helps visualize the distribution of a single numeric variable. Below, we create a histogram of `mpg`.
+
+```{r, echo=FALSE}
+ggplot(mtcars, aes(x = mpg)) +
+  geom_histogram(binwidth = 2, fill = "steelblue", color = "black") +
+  labs(title = "Distribution of Miles Per Gallon",
+       x = "Miles Per Gallon",
+       y = "Count")
+```
+
+# 5. Map of Fuel Efficiency by State
+
+## Introduction
+
+A choropleth map visualizes data using color shading across geographical regions. Here, we create a state-level map of average miles per gallon (mpg) using synthetic data.
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+# Load state map data
+us_states <- map_data("state")
+
+# Generate synthetic average mpg data for each state
+set.seed(42)
+state_mpg <- data.frame(
+  region = tolower(unique(us_states$region)),
+  avg_mpg = runif(length(unique(us_states$region)), min = 15, max = 30)
+)
+
+# Merge with map data
+map_data_mpg <- merge(us_states, state_mpg, by = "region", all.x = TRUE)
+
+# Plot the choropleth map
+MapFig <- ggplot(map_data_mpg, aes(long, lat, group = group, fill = avg_mpg)) + 
+  geom_polygon(color = "white") +
+  coord_fixed(1.3) +
+  theme_minimal() +
+  scale_fill_distiller(palette = "Blues", direction = 1, name = "Avg MPG") +
+  labs(title = "Average Fuel Efficiency by State",
+       caption = "Synthetic Data for Demonstration Purposes")
+
+MapFig
+```
+
+# 6. Conclusion
+
+## Summary
+
+- `ggplot2` is a powerful tool for data visualization in R.
+- We explored scatter plots, histograms, and a choropleth map for fuel efficiency.
+- Customization options allow us to create informative and visually appealing plots.
+
+## Next Steps
+
+- Explore additional `ggplot2` functionalities such as faceting and interactive plots.
+- Use different datasets to practice visualization techniques.
+
+This concludes our code-through tutorial on data visualization using `ggplot2`! 🎉
